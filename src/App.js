@@ -1,16 +1,20 @@
 import './App.css';
+import { Switch, Route } from 'react-router-dom';
+import SignIn from './components/SignIn';
 // import { firebaseConfig } from './firebaseConfig';
-import { useEffect } from 'react';
-import { addSimpleDoc } from './firebase';
-function App() {
-  // console.log(firebaseConfig);
-
-  useEffect(() => {
-    addSimpleDoc();
-  }, []);
+// import { useEffect } from 'react';
+// import { addSimpleDoc } from './firebase';
+function App(props) {
+  const { firebase } = props;
   return (
     <div className='App'>
-      <h1>Building a chat app with react & firebase</h1>
+      <Switch>
+        {/* <Route exact path='/signin' component={SignIn} /> */}
+
+        <Route exact path='/'>
+          <SignIn firebase={firebase} />
+        </Route>
+      </Switch>
     </div>
   );
 }
