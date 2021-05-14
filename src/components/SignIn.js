@@ -1,4 +1,4 @@
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+// import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
 // const uiConfig = {
 //   // Popup signin flow rather than redirect flow.
@@ -15,12 +15,28 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 const SignIn = (props) => {
   const { firebase } = props;
 
-  const db = firebase.firestore();
+  const provider = new firebase.auth.GoogleAuthProvider();
+  //   const db = firebase.firestore();
 
-  db.collection('users').add({ message: 'From Talha Imran' });
+  //   db.collection('users').add({ message: 'From Talha Imran' });
   return (
     <div>
       <h1>Sign In using Google</h1>
+      <button
+        onClick={() => {
+          firebase
+            .auth()
+            .signInWithPopup(provider)
+            .then((result) => {
+              console.log(result);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }}
+      >
+        Sign in with google
+      </button>
       {/* <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} /> */}
     </div>
   );
