@@ -4,14 +4,15 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 // import reportWebVitals from './reportWebVitals';
-import firebase from 'firebase';
-import { firebaseConfig } from './firebaseConfig';
-firebase.initializeApp(firebaseConfig);
+import store from './store';
+import { Provider } from 'react-redux';
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <App firebase={firebase} />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

@@ -1,42 +1,53 @@
-// import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useSelector } from 'react-redux';
+const SignIn = () => {
+  const { firebase, auth } = useSelector((state) => state.firebase);
 
-// const uiConfig = {
-//   // Popup signin flow rather than redirect flow.
-//   signInFlow: 'popup',
-//   // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-//   signInSuccessUrl: '/chat',
-//   // We will display Google and Facebook as auth providers.
-//   signInOptions: [
-//     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-//     firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-//   ],
-// };
-
-const SignIn = (props) => {
-  const { firebase } = props;
-
+  const [user] = useAuthState(auth);
   const provider = new firebase.auth.GoogleAuthProvider();
-  //   const db = firebase.firestore();
 
-  //   db.collection('users').add({ message: 'From Talha Imran' });
+  // console.log(user);
+
+  // const { displayName, email } = user;
   return (
-    <div>
-      <h1>Sign In using Google</h1>
-      <button
-        onClick={() => {
-          firebase
-            .auth()
-            .signInWithPopup(provider)
-            .then((result) => {
-              console.log(result);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }}
-      >
-        Sign in with google
-      </button>
+    <div className='h-screen flex justify-center items-center'>
+      <div className='text-center bg-purple-400 py-5 px-10 rounded'>
+        <h1 className=' font-bold text-2xl text-white mb-3'>
+          Sign In using Google
+        </h1>
+
+        <div className=''>
+          <button
+            className='font-medium  rounded bg-white text-purple-400 py-2 px-7'
+            onClick={() => {
+              auth
+                .signInWithPopup(provider)
+                .then((result) => {
+                  /** @type {firebase.auth.OAuthCredential} */
+                  var credential = result.credential;
+
+                  // This gives you a Google Access Token. You can use it to access the Google API.
+                  var token = credential.accessToken;
+                  // The signed-in user info.
+                  var user = result.user;
+                  // ...
+                })
+                .catch((error) => {
+                  // Handle Errors here.
+                  var errorCode = error.code;
+                  var errorMessage = error.message;
+                  // The email of the user's account used.
+                  var email = error.email;
+                  // The firebase.auth.AuthCredential type that was used.
+                  var credential = error.credential;
+                  // ...
+                });
+            }}
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
       {/* <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} /> */}
     </div>
   );
