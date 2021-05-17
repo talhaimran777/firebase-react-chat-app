@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useSelector, useDispatch } from 'react-redux';
+
+import Spinner from './subcomponents/Spinner';
+
 const SignIn = () => {
   const { firebase, auth } = useSelector((state) => state.firebase);
   // const { currentUser } = auth;
@@ -36,7 +39,9 @@ const SignIn = () => {
 
   // const { displayName, email } = user;
   return loading ? (
-    <h1>Checking if the user is logged in or not</h1>
+    <div className='h-screen flex items-center justify-center'>
+      <Spinner />
+    </div>
   ) : (
     <div className='h-screen flex justify-center items-center'>
       <div className='text-center bg-purple-400 py-5 px-10 rounded'>

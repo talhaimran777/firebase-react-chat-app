@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import Spinner from './subcomponents/Spinner';
 
 export const PrivateRoute = ({ component: Component, ...rest }) => {
   let { auth } = useSelector((state) => state.firebase);
@@ -45,7 +46,9 @@ export const PrivateRoute = ({ component: Component, ...rest }) => {
       {...rest}
       render={(props) =>
         loading ? (
-          <h1>Checking For Signin</h1>
+          <div className='h-screen flex items-center justify-center'>
+            <Spinner />
+          </div>
         ) : user ? (
           <Component {...props} />
         ) : (

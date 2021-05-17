@@ -41,6 +41,7 @@ function App() {
 
         <PrivateRoute exact path='/chat' component={Chat} />
       </Switch>
+      {/* <Spinner /> */}
     </div>
   );
 }
