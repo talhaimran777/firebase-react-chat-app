@@ -13,8 +13,10 @@ const SignIn = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (user) {
+    if (user && !loading) {
       history.push('/chat');
+    } else {
+      dispatch({ type: 'SET_AUTH', payload: auth });
     }
     // if (!loading && currentUser !== null) {
     //   dispatch({ type: 'USER', payload: currentUser });
@@ -34,7 +36,7 @@ const SignIn = () => {
 
   // const { displayName, email } = user;
   return loading ? (
-    <div>Redirecting...</div>
+    <h1>Checking if the user is logged in or not</h1>
   ) : (
     <div className='h-screen flex justify-center items-center'>
       <div className='text-center bg-purple-400 py-5 px-10 rounded'>
