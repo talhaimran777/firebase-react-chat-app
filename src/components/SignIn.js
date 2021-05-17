@@ -35,14 +35,11 @@ const SignIn = () => {
 
   const provider = new firebase.auth.GoogleAuthProvider();
 
-  // console.log(user);
-
-  // const { displayName, email } = user;
   return loading ? (
     <div className='h-screen flex items-center justify-center'>
       <Spinner />
     </div>
-  ) : (
+  ) : !user ? (
     <div className='h-screen flex justify-center items-center'>
       <div className='text-center bg-purple-400 py-5 px-10 rounded'>
         <h1 className=' font-bold text-2xl text-white mb-3'>
@@ -87,6 +84,8 @@ const SignIn = () => {
       </div>
       {/* <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} /> */}
     </div>
+  ) : (
+    ''
   );
 };
 
