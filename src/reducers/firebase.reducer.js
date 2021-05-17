@@ -7,6 +7,11 @@ const firebaseReducer = (state = {}, action) => {
         firestore: action.payload.firestore,
         auth: action.payload.auth,
       };
+    case 'SET_AUTH':
+      return {
+        ...state,
+        auth: action.payload,
+      };
     default:
       return state;
   }

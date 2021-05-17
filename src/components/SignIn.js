@@ -1,15 +1,41 @@
+import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 const SignIn = () => {
   const { firebase, auth } = useSelector((state) => state.firebase);
+  // const { currentUser } = auth;
 
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
+  // console.log(user, 'From signin');
+
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (user) {
+      history.push('/chat');
+    }
+    // if (!loading && currentUser !== null) {
+    //   dispatch({ type: 'USER', payload: currentUser });
+    //   history.push('/chat');
+    // }
+    // if (user && !currentUser) {
+    //   dispatch({ type: 'SET_AUTH', payload: auth });
+    // } else if (currentUser) {
+    //   dispatch({ type: 'USER', payload: currentUser });
+    //   history.push('/chat');
+    // }
+  }, [user]);
+
   const provider = new firebase.auth.GoogleAuthProvider();
 
   // console.log(user);
 
   // const { displayName, email } = user;
-  return (
+  return loading ? (
+    <div>Redirecting...</div>
+  ) : (
     <div className='h-screen flex justify-center items-center'>
       <div className='text-center bg-purple-400 py-5 px-10 rounded'>
         <h1 className=' font-bold text-2xl text-white mb-3'>
@@ -30,6 +56,10 @@ const SignIn = () => {
                   var token = credential.accessToken;
                   // The signed-in user info.
                   var user = result.user;
+                  if (user) {
+                    // dispatch({ type: 'SET_AUTH', payload: auth });
+                    history.push('/chat');
+                  }
                   // ...
                 })
                 .catch((error) => {
