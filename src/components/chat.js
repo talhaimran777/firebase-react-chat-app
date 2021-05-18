@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useHistory } from 'react-router-dom';
 import Spinner from './subcomponents/Spinner';
 
 const Chat = () => {
+  const scrollRef = useRef(null);
+
   const [input, setInput] = useState('');
 
   const { auth, firestore, firebase } = useSelector((state) => state.firebase);
@@ -33,7 +35,15 @@ const Chat = () => {
     }
   }, []);
 
+  const scrollToBottom = () => {
+    scrollRef.current?.scroll({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
   useEffect(async () => {
+    scrollToBottom();
     // console.log(value);
     // dispatch({ type: 'FETCH_CONVERSATION' });
     // // Fetching chats from firestore
@@ -52,7 +62,7 @@ const Chat = () => {
     // } else {
     //   dispatch({ type: 'NO_CONVERSATION' });
     // }
-  }, [loading]);
+  }, [messages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -87,7 +97,12 @@ const Chat = () => {
             Sign Out
           </button>
         </div>
-        <div id='chat' className='mb-5 bg-gray-100 p-3 flex-1 rounded'>
+        <div
+          style={{ height: '100%', overflowY: 'scroll' }}
+          ref={scrollRef}
+          id='chat'
+          className='mb-5 bg-gray-100 p-3 flex-1 rounded'
+        >
           {loading ? (
             <div className='h-full flex items-center justify-center'>
               <Spinner />
