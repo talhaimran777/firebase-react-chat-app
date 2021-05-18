@@ -1,19 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useHistory } from 'react-router-dom';
 import Spinner from './subcomponents/Spinner';
 
 const Chat = () => {
   const [input, setInput] = useState('');
 
-  const { auth, firestore } = useSelector((state) => state.firebase);
-  const { loading, conversation } = useSelector((state) => state.chat);
+  const { auth, firestore, firebase } = useSelector((state) => state.firebase);
+  const { loadingChats, conversation } = useSelector((state) => state.chat);
 
   const { currentUser } = auth;
   const { displayName, uid, photoURL, email } = currentUser;
 
+  const chatRef = firestore.collection('chat');
+
   const history = useHistory();
   const dispatch = useDispatch();
+
+  // dispatch({ type: 'FETCH_CONVERSATION' });
+
+  // Fetching chats from firestore
+  const query = chatRef.orderBy('createdAt').limit(25);
+
+  const [messages, loading, error] = useCollectionData(query, {
+    idField: 'id',
+  });
 
   useEffect(() => {
     if (currentUser) {
@@ -22,22 +34,25 @@ const Chat = () => {
   }, []);
 
   useEffect(async () => {
-    dispatch({ type: 'FETCH_CONVERSATION' });
-
-    // Fetching chats from firestore
-    const result = await firestore.collection('chat').get();
-
-    let messages = [];
-    result.docs.forEach((doc) => {
-      messages.push(doc.data());
-    });
-
-    if (messages.length) {
-      dispatch({ type: 'SUCCESS_CONVERSATION', payload: messages });
-    } else {
-      dispatch({ type: 'NO_CONVERSATION' });
-    }
-  }, []);
+    // console.log(value);
+    // dispatch({ type: 'FETCH_CONVERSATION' });
+    // // Fetching chats from firestore
+    // const query = chatRef.orderBy('createdAt').limit(25);
+    // const [messages, error, loading] = useCollectionData(query, {
+    //   idField: 'id',
+    // });
+    // if (messages.length) alert(messages);
+    // const result = await firestore.collection('chat').get();
+    // let messages = [];
+    // result.docs.forEach((doc) => {
+    //   messages.push(doc.data());
+    // });
+    // if (messages.length) {
+    //   dispatch({ type: 'SUCCESS_CONVERSATION', payload: messages });
+    // } else {
+    //   dispatch({ type: 'NO_CONVERSATION' });
+    // }
+  }, [loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,9 +61,10 @@ const Chat = () => {
       by: displayName,
       email,
       photo: photoURL,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
-    dispatch({ type: 'FETCH_CONVERSATION' });
+    // dispatch({ type: 'FETCH_CONVERSATION' });
     // alert(chat);
   };
 
@@ -76,14 +92,16 @@ const Chat = () => {
             <div className='h-full flex items-center justify-center'>
               <Spinner />
             </div>
-          ) : conversation !== undefined && conversation.length ? (
-            conversation.map((chat) => (
+          ) : messages ? (
+            messages.map((chat) => (
               <div className='mb-4 '>
                 <div
                   id='inline'
-                  className='ml-auto inline-block py-1 px-6 bg-purple-500 rounded-xl'
+                  className='ml-auto inline-block py-1 px-3 bg-purple-500 rounded-xl'
                 >
-                  <h1 className='text-white'>{chat.message}</h1>
+                  <p className='text-white text-md font-medium'>
+                    {chat.message}
+                  </p>
                 </div>
               </div>
             ))

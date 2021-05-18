@@ -11,6 +11,7 @@ import { firebaseConfig } from './firebaseConfig';
 
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/database';
 
 import { PrivateRoute } from './components/privateRoute';
 firebase.initializeApp(firebaseConfig);

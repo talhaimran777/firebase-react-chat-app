@@ -3,18 +3,18 @@ const chatReducer = (state = {}, action) => {
     case 'FETCH_CONVERSATION':
       return {
         ...state,
-        loading: true,
+        loadingChats: true,
       };
     case 'SUCCESS_CONVERSATION':
       return {
         ...state,
-        loading: false,
+        loadingChats: false,
         conversation: action.payload,
       };
     case 'NO_CONVERSATION':
       return {
         ...state,
-        loading: false,
+        loadingChats: false,
         conversation: [],
       };
     default:
