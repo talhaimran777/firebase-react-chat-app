@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 import Spinner from './subcomponents/Spinner';
 
 const Chat = () => {
@@ -29,6 +30,7 @@ const Chat = () => {
     idField: 'id',
   });
 
+  console.log(messages);
   useEffect(() => {
     if (currentUser) {
       dispatch({ type: 'SET_AUTH', payload: auth });
@@ -66,12 +68,14 @@ const Chat = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // const time = firebase.firestore.FieldValue.serverTimestamp();
     await firestore.collection('chat').add({
       message: input,
       by: displayName,
       email,
       photo: photoURL,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: moment().format('hh:mm a'),
     });
 
     // dispatch({ type: 'FETCH_CONVERSATION' });
@@ -101,7 +105,7 @@ const Chat = () => {
           style={{ height: '100%', overflowY: 'scroll' }}
           ref={scrollRef}
           id='chat'
-          className='mb-5 bg-gray-100 p-3 flex-1 rounded'
+          className='pt-10 bg-gray-100 p-3 flex-1 rounded'
         >
           {loading ? (
             <div className='h-full flex items-center justify-center'>
@@ -109,13 +113,36 @@ const Chat = () => {
             </div>
           ) : messages ? (
             messages.map((chat) => (
-              <div className='mb-4 '>
-                <div
-                  id='inline'
-                  className='ml-auto inline-block py-1 px-3 bg-purple-500 rounded-xl'
-                >
-                  <p className='text-white text-md font-medium'>
-                    {chat.message}
+              <div className='mb-10 '>
+                <div className='flex'>
+                  <div className='inline-flex items-center ml-auto'>
+                    <img
+                      className='mr-3 rounded-full'
+                      src={chat.photo}
+                      height='50px'
+                      width='50px'
+                      alt=''
+                    />
+
+                    <div className='text-right'>
+                      <p className='text-sm font-medium text-purple-400'>
+                        @{chat.by}
+                      </p>
+                      <div
+                        id='inline'
+                        className='ml-auto inline-block py-1 px-3 bg-purple-500 rounded-xl'
+                      >
+                        <p className='text-white text-md font-medium'>
+                          {chat.message}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className='flex justify-end'>
+                  <p className='ml-auto text-purple-400 text-xs'>
+                    {chat.createdAt}
                   </p>
                 </div>
               </div>
