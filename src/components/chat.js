@@ -177,9 +177,9 @@ const Chat = () => {
             ref={inputRef}
             type='text'
             value={input}
-            className='text-gray-600 flex-1 border-4 border-purple-400 rounded py-1 px-3 mr-2'
+            className='text-gray-600 w-full mr-2 border-4 border-purple-400 rounded py-1 px-3'
           />
-          <button className='text-purple-600 py-1 px-3 rounded border-purple-400 border-4'>
+          <button className='text-purple-600 flex-1 py-1 px-3 rounded border-purple-400 border-4'>
             Send
           </button>
         </form>
