@@ -12,7 +12,9 @@ const Chat = () => {
   const [input, setInput] = useState('');
 
   const { auth, firestore, firebase } = useSelector((state) => state.firebase);
-  const { loadingChats, conversation } = useSelector((state) => state.chat);
+  const { lastDoc, conversation, total, loaded } = useSelector(
+    (state) => state.chat
+  );
 
   const { currentUser } = auth;
   const { displayName, uid, photoURL, email } = currentUser;
@@ -24,19 +26,50 @@ const Chat = () => {
   // dispatch({ type: 'FETCH_CONVERSATION' });
 
   // Fetching chats from firestore
-  const query = chatRef.orderBy('createdAt').limit(25);
+  const query = chatRef.orderBy('createdAt', 'desc').limit(20);
 
-  const [messages, loading, error] = useCollectionData(query, {
+  const [messages, loading] = useCollectionData(query, {
     idField: 'id',
   });
 
-  console.log(messages);
+  const setTotalFunc = () => {
+    let totalMessages = 0;
+    chatRef.get().then((snapshot) => {
+      // dispatch({type: 'SET_LOADED'});
+      totalMessages = snapshot.docs.length;
+      // alert(totalMessages);
 
+      dispatch({ type: 'SET_TOTAL', payload: totalMessages });
+    });
+  };
   useEffect(() => {
     if (currentUser) {
       dispatch({ type: 'SET_AUTH', payload: auth });
     }
+
+    // we gonna implement logic: if full loaded chat don't show load more chat button
+    setTotalFunc();
   }, []);
+  useEffect(() => {
+    query.get().then((snapshot) => {
+      let lastDocRef = snapshot.docs[snapshot.docs.length - 1];
+
+      dispatch({ type: 'SET_LAST_DOC', payload: lastDocRef });
+
+      if (!loading) {
+        dispatch({ type: 'SET_CHAT', payload: messages.reverse() });
+      }
+    });
+  }, [messages]);
+
+  useEffect(() => {
+    if (conversation) {
+      dispatch({
+        type: 'SET_LOADED_MESSAGES',
+        payload: conversation.length,
+      });
+    }
+  }, [conversation]);
 
   const scrollToBottom = () => {
     scrollRef.current?.scroll({
@@ -45,26 +78,8 @@ const Chat = () => {
     });
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     scrollToBottom();
-    // console.log(value);
-    // dispatch({ type: 'FETCH_CONVERSATION' });
-    // // Fetching chats from firestore
-    // const query = chatRef.orderBy('createdAt').limit(25);
-    // const [messages, error, loading] = useCollectionData(query, {
-    //   idField: 'id',
-    // });
-    // if (messages.length) alert(messages);
-    // const result = await firestore.collection('chat').get();
-    // let messages = [];
-    // result.docs.forEach((doc) => {
-    //   messages.push(doc.data());
-    // });
-    // if (messages.length) {
-    //   dispatch({ type: 'SUCCESS_CONVERSATION', payload: messages });
-    // } else {
-    //   dispatch({ type: 'NO_CONVERSATION' });
-    // }
   }, [messages]);
 
   const handleSubmit = async (e) => {
@@ -84,6 +99,8 @@ const Chat = () => {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         time: moment().format('hh:mm a'),
       });
+
+      setTotalFunc();
     }
   };
 
@@ -95,16 +112,53 @@ const Chat = () => {
             Chat
           </h1>
 
-          <button
-            onClick={() => {
-              auth.signOut();
-              //   dispatch({ type: 'SIGN_OUT' });
-              history.push('/');
-            }}
-            className='text-white py-1 px-6 rounded bg-red-400'
-          >
-            Sign Out
-          </button>
+          <div>
+            {total && loaded && total !== loaded ? (
+              <button
+                onClick={() => {
+                  let next = chatRef
+                    .orderBy('createdAt', 'desc')
+                    .startAfter(lastDoc)
+                    .limit(20);
+
+                  next.get().then((snapshot) => {
+                    let lastDocRef = snapshot.docs[snapshot.docs.length - 1];
+                    dispatch({ type: 'SET_LAST_DOC', payload: lastDocRef });
+                  });
+
+                  let retrievedMessages = [];
+                  next.get().then((snapshot) => {
+                    snapshot.docs.forEach((doc) => {
+                      retrievedMessages.push(doc.data());
+                    });
+                    dispatch({
+                      type: 'SET_NEW_CHAT',
+                      payload: {
+                        prevChat: conversation,
+                        newChat: retrievedMessages.reverse(),
+                      },
+                    });
+                  });
+                }}
+                className='bg-purple-400 py-1 px-3 rounded text-white mr-2'
+              >
+                Load More Chat
+              </button>
+            ) : (
+              ''
+            )}
+
+            <button
+              onClick={() => {
+                auth.signOut();
+                //   dispatch({ type: 'SIGN_OUT' });
+                history.push('/');
+              }}
+              className='text-white py-1 px-6 rounded bg-red-400'
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
         <div
           style={{ height: '100%', overflowY: 'scroll' }}
@@ -116,8 +170,8 @@ const Chat = () => {
             <div className='h-full flex items-center justify-center'>
               <Spinner />
             </div>
-          ) : messages ? (
-            messages.map((chat) => (
+          ) : conversation ? (
+            conversation.map((chat) => (
               <div className='mb-10 '>
                 <div className='flex mb-2'>
                   <div

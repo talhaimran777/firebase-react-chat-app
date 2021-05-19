@@ -1,21 +1,29 @@
 const chatReducer = (state = {}, action) => {
   switch (action.type) {
-    case 'FETCH_CONVERSATION':
+    case 'SET_CHAT':
       return {
         ...state,
-        loadingChats: true,
+        conversation: [...action.payload],
       };
-    case 'SUCCESS_CONVERSATION':
+    case 'SET_NEW_CHAT':
       return {
         ...state,
-        loadingChats: false,
-        conversation: action.payload,
+        conversation: [...action.payload.newChat, ...action.payload.prevChat],
       };
-    case 'NO_CONVERSATION':
+    case 'SET_LAST_DOC':
       return {
         ...state,
-        loadingChats: false,
-        conversation: [],
+        lastDoc: action.payload,
+      };
+    case 'SET_TOTAL':
+      return {
+        ...state,
+        total: action.payload,
+      };
+    case 'SET_LOADED_MESSAGES':
+      return {
+        ...state,
+        loaded: action.payload,
       };
     default:
       return state;
