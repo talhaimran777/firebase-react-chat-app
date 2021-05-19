@@ -46,7 +46,6 @@ const Chat = () => {
     if (currentUser) {
       dispatch({ type: 'SET_AUTH', payload: auth });
     }
-
     // we gonna implement logic: if full loaded chat don't show load more chat button
     setTotalFunc();
 
@@ -60,6 +59,7 @@ const Chat = () => {
 
       if (!loading) {
         dispatch({ type: 'SET_CHAT', payload: messages.reverse() });
+        scrollToBottom();
       }
     });
   }, [messages]);
