@@ -123,7 +123,7 @@ const Chat = () => {
           </h1>
 
           <div>
-            {total > loaded ? (
+            {total > loaded && loaded === 20 ? (
               <button
                 onClick={() => {
                   let next = chatRef
@@ -180,7 +180,7 @@ const Chat = () => {
             <div className='h-full flex items-center justify-center'>
               <Spinner />
             </div>
-          ) : conversation ? (
+          ) : conversation && conversation.length ? (
             conversation.map((chat) => (
               <div className='mb-10 '>
                 <div className='flex mb-2'>
@@ -229,7 +229,9 @@ const Chat = () => {
               </div>
             ))
           ) : (
-            ''
+            <h1 className='text-center text-xl font-bold text-purple-500'>
+              Send a message!
+            </h1>
           )}
         </div>
 
