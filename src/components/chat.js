@@ -4,6 +4,8 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import Spinner from './subcomponents/Spinner';
+import SendIcon from '@material-ui/icons/Send';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 
 const Chat = () => {
   const scrollRef = useRef(null);
@@ -148,9 +150,9 @@ const Chat = () => {
                     });
                   });
                 }}
-                className='bg-purple-400 py-1 px-3 rounded text-white mr-2'
+                className='bg-purple-400 text-white py-1 px-3 rounded mr-2'
               >
-                Load More Chat
+                <AutorenewIcon />
               </button>
             ) : (
               ''
@@ -241,8 +243,8 @@ const Chat = () => {
             value={input}
             className='text-gray-600 w-full mr-2 border-4 border-purple-400 rounded py-1 px-3'
           />
-          <button className='text-purple-600 flex-1 py-1 px-3 rounded border-purple-400 border-4'>
-            Send
+          <button className='text-purple-400 flex-1 py-1 px-3 rounded border-purple-400 border-4'>
+            <SendIcon />
           </button>
         </form>
         {/* <button
