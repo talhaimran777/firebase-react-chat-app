@@ -123,7 +123,7 @@ const Chat = () => {
           </h1>
 
           <div>
-            {total && loaded && total !== loaded ? (
+            {total > loaded ? (
               <button
                 onClick={() => {
                   let next = chatRef
