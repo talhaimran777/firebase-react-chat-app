@@ -49,6 +49,8 @@ const Chat = () => {
 
     // we gonna implement logic: if full loaded chat don't show load more chat button
     setTotalFunc();
+
+    scrollToBottom();
   }, []);
   useEffect(() => {
     query.get().then((snapshot) => {
@@ -77,6 +79,12 @@ const Chat = () => {
       behavior: 'smooth',
     });
   };
+
+  // useEffect(() => {
+  //   if (!loading) {
+  //     scrollToBottom();
+  //   }
+  // }, [conversation]);
 
   useEffect(() => {
     scrollToBottom();
