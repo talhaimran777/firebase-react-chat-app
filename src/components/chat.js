@@ -88,7 +88,7 @@ const Chat = () => {
   };
 
   return (
-    <div className='h-screen bg-purple-500 flex justify-center items-center px-5 py-3'>
+    <div className='h-screen flex justify-center items-center'>
       <div className='rounded flex flex-col h-full bg-white w-full p-5'>
         <div className='flex justify-between items-center mb-5'>
           <h1 className='text-center text-3xl font-bold text-purple-500'>
