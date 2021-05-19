@@ -7,6 +7,7 @@ import Spinner from './subcomponents/Spinner';
 
 const Chat = () => {
   const scrollRef = useRef(null);
+  const inputRef = useRef(null);
 
   const [input, setInput] = useState('');
 
@@ -15,12 +16,11 @@ const Chat = () => {
 
   const { currentUser } = auth;
   const { displayName, uid, photoURL, email } = currentUser;
-
   const chatRef = firestore.collection('chat');
-
   const history = useHistory();
   const dispatch = useDispatch();
 
+  // alert('UID: ' + uid);
   // dispatch({ type: 'FETCH_CONVERSATION' });
 
   // Fetching chats from firestore
@@ -31,6 +31,7 @@ const Chat = () => {
   });
 
   console.log(messages);
+
   useEffect(() => {
     if (currentUser) {
       dispatch({ type: 'SET_AUTH', payload: auth });
@@ -69,17 +70,21 @@ const Chat = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const time = firebase.firestore.FieldValue.serverTimestamp();
-    await firestore.collection('chat').add({
-      message: input,
-      by: displayName,
-      email,
-      photo: photoURL,
-      createdAt: moment().format('hh:mm a'),
-    });
+    if (input !== '') {
+      setInput(() => '');
+      inputRef.current.focus();
 
-    // dispatch({ type: 'FETCH_CONVERSATION' });
-    // alert(chat);
+      // const time = firebase.firestore.FieldValue.serverTimestamp();
+      await firestore.collection('chat').add({
+        userID: uid,
+        message: input,
+        by: displayName,
+        email,
+        photo: photoURL,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        time: moment().format('hh:mm a'),
+      });
+    }
   };
 
   return (
@@ -114,8 +119,12 @@ const Chat = () => {
           ) : messages ? (
             messages.map((chat) => (
               <div className='mb-10 '>
-                <div className='flex'>
-                  <div className='inline-flex items-center ml-auto'>
+                <div className='flex mb-2'>
+                  <div
+                    className={`inline-flex items-center ${
+                      uid === chat.userID ? 'ml-auto' : ''
+                    }`}
+                  >
                     <img
                       className='mr-3 rounded-full'
                       src={chat.photo}
@@ -124,15 +133,21 @@ const Chat = () => {
                       alt=''
                     />
 
-                    <div className='text-right'>
+                    <div
+                      className={`${
+                        uid === chat.userID ? 'text-right' : 'text-left'
+                      }`}
+                    >
                       <p className='text-sm font-medium text-purple-400'>
                         @{chat.by}
                       </p>
                       <div
                         id='inline'
-                        className='ml-auto inline-block py-1 px-3 bg-purple-500 rounded-xl'
+                        className={`ml-auto inline-block py-1 px-3 rounded-xl ${
+                          uid === chat.userID ? 'bg-gray-400' : 'bg-purple-400'
+                        }`}
                       >
-                        <p className='text-white text-md font-medium'>
+                        <p className={`text-md font-medium text-white`}>
                           {chat.message}
                         </p>
                       </div>
@@ -140,10 +155,12 @@ const Chat = () => {
                   </div>
                 </div>
 
-                <div className='flex justify-end'>
-                  <p className='ml-auto text-purple-400 text-xs'>
-                    {chat.createdAt}
-                  </p>
+                <div
+                  className={`flex  ${
+                    uid === chat.userID ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  <p className=' text-purple-400 text-xs'>{chat.time}</p>
                 </div>
               </div>
             ))
@@ -157,6 +174,7 @@ const Chat = () => {
             onChange={(e) => {
               setInput((state) => e.target.value);
             }}
+            ref={inputRef}
             type='text'
             value={input}
             className='text-gray-600 flex-1 border-4 border-purple-400 rounded py-1 px-3 mr-2'
