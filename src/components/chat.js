@@ -44,14 +44,22 @@ const Chat = () => {
       dispatch({ type: 'SET_TOTAL', payload: totalMessages });
     });
   };
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scroll({
+      top: scrollRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
+  useEffect(() => {
+    setTotalFunc();
+  }, [conversation]);
+
   useEffect(() => {
     if (currentUser) {
       dispatch({ type: 'SET_AUTH', payload: auth });
     }
-    // we gonna implement logic: if full loaded chat don't show load more chat button
-    setTotalFunc();
-
-    scrollToBottom();
   }, []);
   useEffect(() => {
     query.get().then((snapshot) => {
@@ -74,23 +82,6 @@ const Chat = () => {
       });
     }
   }, [conversation]);
-
-  const scrollToBottom = () => {
-    scrollRef.current?.scroll({
-      top: scrollRef.current.scrollHeight,
-      behavior: 'smooth',
-    });
-  };
-
-  // useEffect(() => {
-  //   if (!loading) {
-  //     scrollToBottom();
-  //   }
-  // }, [conversation]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,7 +114,7 @@ const Chat = () => {
           </h1>
 
           <div>
-            {total > loaded && loaded === 20 ? (
+            {total !== loaded && loaded <= total ? (
               <button
                 onClick={() => {
                   let next = chatRef
@@ -174,7 +165,7 @@ const Chat = () => {
           style={{ height: '100%', overflowY: 'scroll' }}
           ref={scrollRef}
           id='chat'
-          className='pt-10 bg-gray-100 p-3 flex-1 rounded'
+          className=' bg-gray-100 pt-10 px-3 flex-1 rounded'
         >
           {loading ? (
             <div className='h-full flex items-center justify-center'>
@@ -182,7 +173,7 @@ const Chat = () => {
             </div>
           ) : conversation && conversation.length ? (
             conversation.map((chat) => (
-              <div className='mb-10 '>
+              <div key={chat.id} className='mb-10 '>
                 <div className='flex mb-2'>
                   <div
                     className={`inline-flex items-center ${
@@ -228,10 +219,12 @@ const Chat = () => {
                 </div>
               </div>
             ))
-          ) : (
+          ) : conversation && conversation.length === 0 ? (
             <h1 className='text-center text-xl font-bold text-purple-500'>
               Send a message!
             </h1>
+          ) : (
+            ''
           )}
         </div>
 
