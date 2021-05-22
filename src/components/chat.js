@@ -182,7 +182,7 @@ const Chat = () => {
             </div>
           ) : conversation && conversation.length ? (
             conversation.map((chat) => (
-              <div className='mb-10 '>
+              <div key={chat.id} className='mb-10 '>
                 <div className='flex mb-2'>
                   <div
                     className={`inline-flex items-center ${
@@ -228,10 +228,12 @@ const Chat = () => {
                 </div>
               </div>
             ))
-          ) : (
+          ) : conversation && messages && conversation.length >= 1 ? (
             <h1 className='text-center text-xl font-bold text-purple-500'>
               Send a message!
             </h1>
+          ) : (
+            ''
           )}
         </div>
 
